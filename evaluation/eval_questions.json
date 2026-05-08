@@ -1,0 +1,12 @@
+[
+  {
+    "question": "What are the termination conditions in the document?",
+    "ground_truth": "The agreement may be terminated with written notice according to the termination clause.",
+    "expected_source": "contract.pdf page 6"
+  },
+  {
+    "question": "What are the main responsibilities mentioned?",
+    "ground_truth": "The document states the responsibilities listed under the obligations section.",
+    "expected_source": "contract.pdf page 3"
+  }
+]

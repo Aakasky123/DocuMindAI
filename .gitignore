@@ -1,0 +1,38 @@
+# Local environment files
+.env
+backend/.env
+frontend/.env
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+
+# Frontend build/dependencies
+node_modules/
+dist/
+frontend/node_modules/
+frontend/dist/
+
+# Local runtime data
+data/uploads/
+!data/uploads/.gitkeep
+data/bm25_index/*
+!data/bm25_index/.gitkeep
+evaluation/reports/*
+!evaluation/reports/.gitkeep
+mlruns/
+*.db
+
+# Editor/OS/logs
+.DS_Store
+.vscode/
+.idea/
+*.log
+
+data/uploads/*
+!data/uploads/.gitkeep
+
+data/bm25_index/*
+!data/bm25_index/.gitkeep
