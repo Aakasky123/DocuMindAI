@@ -236,11 +236,22 @@ export default function Chat({ documents = [] }) {
                   <Meta label="Provider" value={message.response?.model_provider || "n/a"} />
                   <Meta label="Retrieval" value={message.response?.retrieval_mode || "n/a"} />
                 </div>
-                <div className="mt-6 grid gap-3 lg:grid-cols-2">
-                  {(message.response?.citations || []).map((citation) => (
-                    <Citation citation={citation} key={citation.chunk_id} />
-                  ))}
-                  {!message.response?.citations?.length ? <p className="text-sm text-slate-500">No citations returned.</p> : null}
+                <div className="mt-7 border-t border-slate-100 pt-5">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Retrieved Context</p>
+                      <p className="mt-1 text-sm text-slate-500">Sources used to ground this answer.</p>
+                    </div>
+                    <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
+                      {(message.response?.citations || []).length} source{(message.response?.citations || []).length === 1 ? "" : "s"}
+                    </span>
+                  </div>
+                  <div className="mt-4 grid gap-4 lg:grid-cols-2">
+                    {(message.response?.citations || []).map((citation, index) => (
+                      <Citation citation={citation} index={index} key={citation.chunk_id || `${citation.document_id}-${index}`} />
+                    ))}
+                    {!message.response?.citations?.length ? <p className="text-sm text-slate-500">No citations returned.</p> : null}
+                  </div>
                 </div>
               </div>
             </article>
@@ -288,17 +299,40 @@ function Meta({ label, value }) {
   );
 }
 
-function Citation({ citation }) {
+function Citation({ citation, index }) {
+  const sourceNumber = index + 1;
+  const score = typeof citation.score === "number" ? citation.score.toFixed(3) : "n/a";
+  const page = citation.page_number ? `Page ${citation.page_number}` : "Page unavailable";
+
   return (
-    <article className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-      <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
-        <span className="font-semibold text-slate-800">{citation.document_name || "Unknown document"}</span>
-        <span className="rounded-full bg-white px-2 py-1 text-slate-500">{citation.page_number ? `Page ${citation.page_number}` : "No page"}</span>
+    <article className="group rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-sky-200 hover:shadow-md">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <span className="inline-flex rounded-full border border-sky-100 bg-sky-50 px-2.5 py-1 text-xs font-bold text-sky-700">
+            Source {sourceNumber}
+          </span>
+          <h4 className="mt-3 truncate text-sm font-semibold text-slate-950" title={citation.document_name || "Unknown document"}>
+            {citation.document_name || "Unknown document"}
+          </h4>
+          <p className="mt-1 text-xs font-medium text-slate-500">
+            {page} <span className="text-slate-300">•</span> Relevance {score}
+          </p>
+        </div>
       </div>
-      <p className="mt-3 text-sm leading-6 text-slate-700">{citation.text_preview || "No preview returned."}</p>
-      <div className="mt-3 space-y-1 text-xs text-slate-500">
-        <p>Score: {typeof citation.score === "number" ? citation.score.toFixed(3) : "n/a"}</p>
-        <p className="break-all font-mono">Chunk: {citation.chunk_id || "n/a"}</p>
+
+      <blockquote className="mt-4 border-l-2 border-slate-200 pl-3 text-sm leading-6 text-slate-700">
+        <p className="line-clamp-5">{citation.text_preview || "No preview returned."}</p>
+      </blockquote>
+
+      <div className="mt-4 border-t border-slate-100 pt-3">
+        <details className="group/details">
+          <summary className="cursor-pointer select-none text-xs font-semibold text-slate-400 transition hover:text-slate-600">
+            Source metadata
+          </summary>
+          <p className="mt-2 break-all font-mono text-[11px] leading-5 text-slate-400">
+            chunk_id: {citation.chunk_id || "n/a"}
+          </p>
+        </details>
       </div>
     </article>
   );
